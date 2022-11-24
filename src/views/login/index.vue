@@ -13,7 +13,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
+          placeholder="请输入用户名"
           name="username"
           type="text"
           tabindex="1"
@@ -30,7 +30,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="请输入密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -41,13 +41,15 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" class="login-btn" @click.native.prevent="handleLogin">
+        <span>登</span>
+        <span>录</span>
+        </el-button>
 
       <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
         <span> password: any</span>
       </div>
-
     </el-form>
   </div>
 </template>
@@ -143,9 +145,12 @@ $cursor: #fff;
 .login-container {
   .el-input {
     display: inline-block;
-    height: 47px;
-    width: 85%;
-
+    height: 46px;
+    width: 80%;
+    // 不起效
+    /deep/.el-form-item__error{
+    color: #283443 !important;
+  }
     input {
       background: transparent;
       border: 0px;
@@ -165,22 +170,28 @@ $cursor: #fff;
 
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    color: #454545;
+    background: rgba(255, 255, 255,.1);
+    height: 46px;
+    border-radius: 10px;
+margin-top: 5px;
+    // color: #454545;
   }
+
 }
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
+$bg:#654ea3;
+$dark_gray:#737b7f;
 $light_gray:#eee;
 
 .login-container {
   min-height: 100%;
   width: 100%;
   background-color: $bg;
+background: -webkit-linear-gradient(to right, #eaafc8, #654ea3);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #eaafc8, #654ea3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
   overflow: hidden;
 
   .login-form {
@@ -201,6 +212,23 @@ $light_gray:#eee;
       &:first-of-type {
         margin-right: 16px;
       }
+    }
+  }
+  .login-btn{
+    width:100%;
+    margin-top: 10px;
+    margin-bottom:30px;
+    height: 46px;
+    border-radius: 10px;
+    background:#d79eb6;
+        // 取消边框
+      border: 0;
+    &:hover{
+      background:#cb94ab;
+    }
+    span{
+      margin: 0 10px;
+      font-size: 16px;
     }
   }
 
@@ -229,7 +257,7 @@ $light_gray:#eee;
     right: 10px;
     top: 7px;
     font-size: 16px;
-    color: $dark_gray;
+    // color: $dark_gray;
     cursor: pointer;
     user-select: none;
   }
