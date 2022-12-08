@@ -126,7 +126,7 @@ export default {
   }
 }
 </script>
-
+<!-- 全局样式 -->
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
@@ -180,6 +180,7 @@ margin-top: 5px;
 }
 </style>
 
+<!-- 本地样式 -->
 <style lang="scss" scoped>
 $bg:#654ea3;
 $dark_gray:#737b7f;
