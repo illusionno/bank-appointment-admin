@@ -13,18 +13,20 @@ import store from './store'
 import router from './router'
 
 import '@/icons' // icon
-import '@/permission' // permission control
+// import '@/permission' // permission control
 // 引入echarts
 import * as echarts from 'echarts'
 Vue.prototype.$echarts = echarts
-/**
- * If you don't want to use mock-server
- * you want to use MockJs for mock api
- * you can execute: mockXHR()
- *
- * Currently MockJs will be used in the production environment,
- * please remove it before going online! ! !
- */
+
+import { Message } from 'element-ui';
+import { MessageBox } from 'element-ui';
+
+Vue.prototype.$message = Message;
+Vue.prototype.$confirm = MessageBox.confirm; //MessageBox是ElementUI里的一个组件
+
+import moment from 'moment'
+Vue.prototype.$moment = moment;
+
 import { mockXHR } from '../mock'
 if (process.env.NODE_ENV === 'production') {
   mockXHR()

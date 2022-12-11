@@ -65,6 +65,18 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/bank',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Bank',
+        component: () => import('@/views/bank/index'),
+        meta: { title: '银行管理', icon: 'form' }
+      }
+    ]
+  },
+  {
     path: 'external-link',
     component: Layout,
     children: [
