@@ -15,12 +15,13 @@
         </el-form-item>
         <el-form-item label="状态:">
           <el-select
-            v-model="queryInfo.certificatesType"
+            v-model="queryInfo.status"
+            clearable
             placeholder="请选择"
             style="width: 150px"
           >
-            <el-option label="锁定" value="0"></el-option>
-            <el-option label="正常" value="1"></el-option>
+            <el-option label="锁定" :value="0"></el-option>
+            <el-option label="正常" :value="1"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -45,6 +46,7 @@
     <!-- 用户列表 -->
     <el-table :data="userdata" border stripe>
       <el-table-column type="index" label="#"></el-table-column>
+      <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="name" label="姓名"></el-table-column>
       <el-table-column prop="phone" label="手机号码"></el-table-column>
       <el-table-column prop="passWord" label="密码"></el-table-column>
@@ -63,7 +65,7 @@
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
       <el-table-column prop="updateTime" label="删除时间"></el-table-column>
       <el-table-column label="操作">
-        <template>
+        <template slot-scope="scope">
           <!-- 修改按钮 -->
           <el-button
             plain
@@ -78,7 +80,7 @@
             type="danger"
             icon="el-icon-delete"
             size="mini"
-            @click="deleteUserById"
+            @click="deleteUserById(scope.row.id)"
           ></el-button>
         </template>
       </el-table-column>
@@ -104,7 +106,7 @@
 </template>
 
 <script>
-import { getUser } from "@/api/userManage.js";
+import { getUser, deleteUser } from "@/api/userManage.js";
 import AddUser from "./module/AddUser";
 import UpdateUser from "./module/UpdateUser.vue";
 // const data = [
@@ -182,7 +184,9 @@ export default {
         });
     },
     // 通过用户名搜索
-    handleSearch() {},
+    handleSearch() {
+      this.getUserList();
+    },
     // 监听pagesize事件
     handleSizeChange(val) {
       this.page = val;
@@ -202,24 +206,25 @@ export default {
       this.$refs.updateUser.visible = true;
     },
     // 通过id删除用户
-    async deleteUserById() {
-      //
-      // const confirmResult = await this.$confirm("确定要删除该用户吗?", "提示", {
-      //   confirmButtonText: "确定",
-      //   cancelButtonText: "取消",
-      //   type: "warning"
-      // }).catch(err => err);
-      // // 用户确认删除, 返回字符串confirm
-      // // 用户取消删除, 返回字符串cancel
-      // if (confirmResult != "confirm") {
-      //   return this.$message.info("已取消删除");
-      // }
-      /*   const { data: res } = await this.$http.delate("users/" + id);
-      if (res.meta.status != 200) {
-        return this.$message.error("删除该用户失败");
-      } */
-      // this.$message.success("删除用户成功");
-      // this.getUserList()
+    async deleteUserById(id) {
+      const confirmResult = await this.$confirm("确定要删除该用户吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).catch(err => err);
+      // 用户确认删除, 返回字符串confirm
+      // 用户取消删除, 返回字符串cancel
+      if (confirmResult != "confirm") {
+        return this.$message.info("已取消删除");
+      }
+      deleteUser(id).then(res => {
+        if (res.data.code === 200) {
+          this.$message.success("删除成功");
+          this.getUserList();
+        } else {
+          this.$message.error("删除失败");
+        }
+      });
     }
   }
 };

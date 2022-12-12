@@ -13,7 +13,10 @@
         ref="addFormRef"
         label-width="80px"
       >
-        <el-form-item label="用户名" prop="name" disabled>
+      <el-form-item label="用户名" prop="userName" >
+          <el-input v-model="addForm.userName"></el-input>
+        </el-form-item>
+        <el-form-item label="姓名" prop="name" >
           <el-input v-model="addForm.name"></el-input>
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
@@ -35,13 +38,8 @@
         </el-form-item>
         <el-form-item label="证件类型" prop="certificatesType">
           <el-select v-model="addForm.certificatesType" placeholder="请选择">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
+            <el-option label="身份证" :value="1"></el-option>
+            <el-option label="其他" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="证件号" prop="certificatesNo">
@@ -58,6 +56,7 @@
 </template>
 
 <script>
+// import {addUser } from "@/api/userManage.js";
 export default {
   name: "AddUser",
   data() {
@@ -79,32 +78,33 @@ export default {
     };
     return {
       visible: false,
-      options: [
-        {
-          value: 0,
-          label: "身份证号",
-        },
-        {
-          value: 1,
-          label: "护照",
-        },
-      ],
+      // 确认密码（不传参）
       addForm: {
+        userName:"",
         name: "",
         phone: "",
         passWord: "",
-        checkPass: "",
+      checkPass: "",
         certificatesType: "",
         certificatesNo: "",
       },
       // 添加用户的校验
       addFormRules: {
-        name: [
+        userName: [
           { required: true, message: "请输入用户名", trigger: "blur" },
           {
             min: 3,
-            max: 5,
-            message: "用户名长度在 3 到 5 个字符",
+            max: 7,
+            message: "用户名长度在 3 到 7 个字符",
+            trigger: "blur",
+          },
+        ],
+        name: [
+          { required: true, message: "请输入姓名", trigger: "blur" },
+          {
+            min: 2,
+            max: 4,
+            message: "姓名长度在 2 到 4 个字符",
             trigger: "blur",
           },
         ],
@@ -147,6 +147,8 @@ export default {
         if (!vaild) {
           return this.$message.error("添加失败,请重新填写!");
         }
+        console.log('1',this.addForm);
+        // addUser()
         this.$message.success("添加成功");
         this.visible = false;
       });
