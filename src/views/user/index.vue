@@ -55,13 +55,14 @@
         label="证件类型"
       ></el-table-column>
       <el-table-column prop="certificatesNo" label="证件号码"></el-table-column>
-      <el-table-column prop="status" label="状态"></el-table-column>
-
-      <!-- <el-table-column label="状态" >
+      <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.status"></el-switch>
+          <el-switch
+            v-model="scope.row.status"
+            active-color="#917ccb"
+          ></el-switch>
         </template>
-      </el-table-column> -->
+      </el-table-column>
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
       <el-table-column prop="updateTime" label="删除时间"></el-table-column>
       <el-table-column label="操作">
@@ -117,7 +118,7 @@ const data = [
     passWord: "123456",
     certificatesType: "111",
     certificatesNo: "11111",
-    status: 1,
+    status: true,
     createTime: "2022-11-22T13:24:30.000+0000",
     updateTime: "2022-11-22T13:24:51.000+0000",
     isDeleted: 0,
@@ -129,7 +130,7 @@ const data = [
     passWord: "123456",
     certificatesType: "111",
     certificatesNo: "11111",
-    status: 1,
+    status: false,
     createTime: "2022-11-22T13:24:30.000+0000",
     updateTime: "2022-11-22T13:24:51.000+0000",
     isDeleted: 0,
@@ -174,6 +175,8 @@ export default {
               item.updateTime = this.$moment(item.updateTime).format(
                 "YYYY-MM-DD HH:mm:ss"
               );
+              // 0锁定 1正常
+              item.status = item.status == 0 ? false : true;
             });
           } else {
             this.$message.error("请求失败");

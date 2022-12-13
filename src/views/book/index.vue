@@ -1,5 +1,5 @@
 <template>
-  <div class="serviceList">
+  <div class="bookList">
     <!-- 搜索与添加 -->
     <div class="search-row">
       <el-form :inline="true" v-model="queryInfo">
@@ -23,6 +23,16 @@
           >
           </el-input>
         </el-form-item>
+        <el-form-item label="预约人:">
+          <el-input
+            placeholder="请输入预约人"
+            clearable
+            v-model.trim="queryInfo.userName"
+            @change="handleSearch"
+            style="width: 150px"
+          >
+          </el-input>
+        </el-form-item>
         <el-form-item>
           <el-button
             type="primary"
@@ -36,17 +46,31 @@
           class="my-btn"
           type="warning"
           plain
-          @click="showAddService"
+          @click="showAddBook"
           icon="el-icon-plus"
-          >添加业务</el-button
+          >添加预约</el-button
         >
       </el-form>
     </div>
-    <!--银行业务列表 -->
+
+    <!-- 银行列表 -->
     <el-table :data="data" border stripe>
       <el-table-column type="index" label="#"></el-table-column>
       <el-table-column prop="bankName" label="银行名称"></el-table-column>
-      <el-table-column prop="businessName" label="业务名称"></el-table-column>
+      <el-table-column prop="businessBank" label="业务名称"></el-table-column>
+      <!-- <el-table-column prop="status" label="状态">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-color="#917ccb"
+          ></el-switch>
+        </template>
+      </el-table-column> -->
+      <el-table-column prop="userName" label="预约人"></el-table-column>
+      <el-table-column
+        prop="appointmentTime"
+        label="预约时间"
+      ></el-table-column>
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
       <el-table-column prop="updateTime" label="删除时间"></el-table-column>
       <el-table-column label="操作">
@@ -57,7 +81,7 @@
             type="primary"
             icon="el-icon-edit"
             size="mini"
-            @click="showUpdateService"
+            @click="showUpdateBook"
           ></el-button>
           <!-- 删除按钮 -->
           <el-button
@@ -65,7 +89,7 @@
             type="danger"
             icon="el-icon-delete"
             size="mini"
-            @click="deleteServiceById(scope.row.id)"
+            @click="deleteBookById(scope.row.id)"
           ></el-button>
         </template>
       </el-table-column>
@@ -82,45 +106,41 @@
       :total="10"
     >
     </el-pagination>
-    <!-- 添加业务对话框 -->
-    <AddService ref="addService"></AddService>
-    <UpdateService ref="updateService"></UpdateService>
+    <AddBook ref="addBook"></AddBook>
   </div>
 </template>
 
 <script>
-import { getService, deleteService } from "@/api/service.js";
-import AddService from "./module/AddService.vue";
-import UpdateService from "./module/UpdateService.vue";
+import AddBook from "./module/AddBook.vue";
 const data = [
   {
     id: 1,
     bankName: "中国银行",
-    businessName: "办信用卡",
-    bankInfoId: 1,
+    businessBank: "取钱",
+    userName: "小李",
+    appointmentTime: "2022-11-22T13:24:30.000+0000",
     createTime: "2022-11-22T13:24:30.000+0000",
     updateTime: "2022-11-22T13:24:51.000+0000",
-    isDeleted: 0,
   },
   {
     id: 2,
-    bankName: "中国建设银行",
-    businessName: "存钱",
-    bankInfoId: 1,
+    bankName: "中国建设",
+    businessBank: "取钱1",
+    status: true,
+    userName: "小李1",
+    appointmentTime: "2022-11-22T13:24:30.000+0000",
     createTime: "2022-11-22T13:24:30.000+0000",
     updateTime: "2022-11-22T13:24:51.000+0000",
-    isDeleted: 0,
   },
 ];
 export default {
   components: {
-    AddService,
-    UpdateService,
+    AddBook,
   },
   data() {
     return {
       data,
-      serviceData: [],
+      bookData: [],
       // 当前页数
       page: 1,
       // 当前每页显示多少数据
@@ -128,75 +148,28 @@ export default {
       // 查询参数
       queryInfo: {
         bankName: "",
+        userName: "",
         businessName: "",
       },
     };
   },
   methods: {
-    // 获取业务列表
-    getServiceList() {
-      getService(this.page, this.limit, this.queryInfo)
-        .then((res) => {
-          console.log(res);
-          // if (res.data.code === 200) {
-          //     this.serviceData = res.data.data.records;
-          //     this.serviceData.forEach((item) => {
-          //       item.createTime = this.$moment(item.createTime).format(
-          //         "YYYY-MM-DD HH:mm:ss"
-          //       );
-          //       item.updateTime = this.$moment(item.updateTime).format(
-          //         "YYYY-MM-DD HH:mm:ss"
-          //       );
-          //   } else {
-          //     this.$message.error("请求失败");
-          //   }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    // 通过关键词搜索
-    handleSearch() {
-      this.getServiceList();
-    },
+    handleSearch() {},
     // 监听pagesize事件
     handleSizeChange(val) {
       this.page = val;
-      // this.getServiceList();
+      // this.getBankList();
     },
     // 当前页改变
     handleCurrentChange(val) {
       this.limit = val;
-      // this.getServiceList();
+      // this.getBankList();
     },
-    //显示添加业务对话框
-    showAddService() {
-      this.$refs.addService.visible = true;
+    showAddBook() {
+      this.$refs.addBook.visible = true;
     },
-    //显示更新业务对话框
-    showUpdateService() {
-      this.$refs.updateService.visible = true;
-    },
-    // 通过id删除业务
-    async deleteServiceById(id) {
-      const confirmResult = await this.$confirm("确定要删除该银行吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      }).catch((err) => err);
-      // 用户确认删除, 返回字符串confirm
-      // 用户取消删除, 返回字符串cancel
-      if (confirmResult != "confirm") {
-        return this.$message.info("已取消删除");
-      }
-      deleteService(id).then((res) => {
-        if (res.data.code === 200) {
-          this.$message.success("删除成功");
-          this.getServiceList();
-        } else {
-          this.$message.error("删除失败");
-        }
-      });
+    showUpdateBook() {
+      // this.$refs.updateBook.visible = true;
     },
   },
 };
@@ -204,7 +177,7 @@ export default {
 
 <style scoped lang="scss">
 @import "~@/styles/common.scss";
-.serviceList {
+.bookList {
   margin: 25px;
 }
 </style>

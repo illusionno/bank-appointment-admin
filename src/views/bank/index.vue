@@ -49,7 +49,14 @@
       <el-table-column prop="bankName" label="银行名称"></el-table-column>
       <el-table-column prop="bankCode" label="银行编号"></el-table-column>
       <el-table-column prop="address" label="银行地址"></el-table-column>
-      <el-table-column prop="status" label="状态"></el-table-column>
+      <el-table-column prop="status" label="状态">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-color="#917ccb"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column prop="contactsName" label="联系人"></el-table-column>
       <el-table-column
         prop="contactsPhone"
@@ -100,7 +107,7 @@
 
 <script>
 import { getBank, deleteBank } from "@/api/bank.js";
-import AddBank from "./module/AddBank.vue";
+import AddBank from "./module/AddBank";
 import UpdateBank from "./module/UpdateBank.vue";
 const data = [
   {
@@ -108,7 +115,7 @@ const data = [
     bankName: "中国银行",
     bankCode: "1111",
     address: "江苏省南京市xx",
-    status: 1,
+    status: true,
     contactsName: "王刚",
     contactsPhone: "15167238498",
     createTime: "2022-11-22T13:24:30.000+0000",
@@ -120,7 +127,7 @@ const data = [
     bankName: "中国建设银行",
     bankCode: "1131",
     address: "江苏省南京市xx",
-    status: 1,
+    status: false,
     contactsName: "刘刚",
     contactsPhone: "15147238498",
     createTime: "2022-11-22T13:24:30.000+0000",
@@ -163,6 +170,8 @@ export default {
           //       item.updateTime = this.$moment(item.updateTime).format(
           //         "YYYY-MM-DD HH:mm:ss"
           //       );
+          // 0可预约 1不可预约
+          // item.status = item.status == 0 ? true : false;
           //     });
           //   } else {
           //     this.$message.error("请求失败");

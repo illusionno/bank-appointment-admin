@@ -1,8 +1,8 @@
 <template>
   <div>
-    <!-- 添加用户对话框-->
+    <!-- 添加银行对话框-->
     <el-dialog
-      title="添加用户"
+      title="添加银行"
       :visible.sync="visible"
       width="50%"
       @close="handleClose"
@@ -70,7 +70,7 @@ export default {
       // 添加银行的校验
       addFormRules: {
         bankName: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
+          { required: true, message: "请输入业务名称", trigger: "blur" },
         ],
         bankCode: [
           { required: true, message: "请输入银行编号", trigger: "blur" },

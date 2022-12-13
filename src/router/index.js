@@ -89,6 +89,18 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/book',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Book',
+        component: () => import('@/views/book/index'),
+        meta: { title: '预约管理', icon: 'example' }
+      }
+    ]
+  },
+  {
     path: 'external-link',
     component: Layout,
     children: [

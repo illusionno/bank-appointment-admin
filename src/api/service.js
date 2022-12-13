@@ -30,7 +30,7 @@ export function addService(data)
 }
 
 // 更新业务
-export function addService(data)
+export function updateService(data)
 {
   return request({
     url: `refundInfo/update`,
