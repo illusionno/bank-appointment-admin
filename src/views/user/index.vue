@@ -44,7 +44,7 @@
       </el-form>
     </div>
     <!-- 用户列表 -->
-    <el-table :data="data" border stripe>
+    <el-table :data="userData" border stripe>
       <el-table-column type="index" label="#"></el-table-column>
       <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="name" label="姓名"></el-table-column>
@@ -53,8 +53,15 @@
       <el-table-column
         prop="certificatesType"
         label="证件类型"
-      ></el-table-column>
-      <el-table-column prop="certificatesNo" label="证件号码"></el-table-column>
+      >
+      <template slot-scope="scope">
+          <el-tag v-if="scope.row.certificatesType == '身份证'">身份证</el-tag>
+          <el-tag type="success" v-else>其他证件</el-tag>
+        </template>
+    </el-table-column>
+      <el-table-column prop="certificatesNo" label="证件号码">
+
+      </el-table-column>
       <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
           <el-switch
@@ -73,7 +80,7 @@
             type="primary"
             icon="el-icon-edit"
             size="mini"
-            @click="showUpdateUser"
+            @click="showUpdateUser(scope.row)"
           ></el-button>
           <!-- 删除按钮 -->
           <el-button
@@ -95,12 +102,12 @@
       :page-sizes="[1, 3, 5, 7]"
       :page-size="100"
       layout="total, sizes, prev, pager, next"
-      :total="11"
+      :total="this.userData.length"
     >
     </el-pagination>
 
     <!-- 添加用户对话框 -->
-    <AddUser ref="addUser"></AddUser>
+    <AddUser ref="addUser" @refresh="refresh"></AddUser>
     <!-- 编辑用户对话框 -->
     <UpdateUser ref="updateUser"></UpdateUser>
   </div>
@@ -121,7 +128,7 @@ const data = [
     status: true,
     createTime: "2022-11-22T13:24:30.000+0000",
     updateTime: "2022-11-22T13:24:51.000+0000",
-    isDeleted: 0,
+    isDeleted: 0
   },
   {
     id: 2,
@@ -133,13 +140,13 @@ const data = [
     status: false,
     createTime: "2022-11-22T13:24:30.000+0000",
     updateTime: "2022-11-22T13:24:51.000+0000",
-    isDeleted: 0,
-  },
+    isDeleted: 0
+  }
 ];
 export default {
   components: {
     AddUser,
-    UpdateUser,
+    UpdateUser
   },
   data() {
     return {
@@ -153,8 +160,8 @@ export default {
       // 查询参数
       queryInfo: {
         name: "",
-        status: "",
-      },
+        status: ""
+      }
     };
   },
   created() {
@@ -164,11 +171,11 @@ export default {
     // 请求用户列表
     getUserList() {
       getUser(this.page, this.limit, this.queryInfo)
-        .then((res) => {
+        .then(res => {
           // console.log(res);
           if (res.data.code === 200) {
             this.userData = res.data.data.records;
-            this.userData.forEach((item) => {
+            this.userData.forEach(item => {
               item.createTime = this.$moment(item.createTime).format(
                 "YYYY-MM-DD HH:mm:ss"
               );
@@ -177,12 +184,13 @@ export default {
               );
               // 0锁定 1正常
               item.status = item.status == 0 ? false : true;
+              item.certificatesType = item.certificatesType == '1'?'身份证':'其他证件'
             });
           } else {
             this.$message.error("请求失败");
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -205,22 +213,26 @@ export default {
       this.$refs.addUser.visible = true;
     },
     // 显示编辑用户对话框
-    showUpdateUser() {
+    showUpdateUser(record) {
       this.$refs.updateUser.visible = true;
+      this.$refs.updateUser.edit(record);
+
     },
     // 通过id删除用户
     async deleteUserById(id) {
+      console.log(id);
       const confirmResult = await this.$confirm("确定要删除该用户吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning",
-      }).catch((err) => err);
+        type: "warning"
+      }).catch(err => err);
       // 用户确认删除, 返回字符串confirm
       // 用户取消删除, 返回字符串cancel
       if (confirmResult != "confirm") {
         return this.$message.info("已取消删除");
       }
-      deleteUser(id).then((res) => {
+      deleteUser(id).then(res => {
+        console.log(res);
         if (res.data.code === 200) {
           this.$message.success("删除成功");
           this.getUserList();
@@ -229,7 +241,10 @@ export default {
         }
       });
     },
-  },
+    refresh() {
+      this.getUserList();
+    }
+  }
 };
 </script>
 

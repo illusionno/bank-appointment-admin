@@ -56,14 +56,13 @@
 </template>
 
 <script>
-// import {addUser } from "@/api/userManage.js";
+import { addUser } from "@/api/userManage.js";
 export default {
   name: "AddUser",
   data() {
     // 验证手机号规则
     let checkPhone = (rule, value, cb) => {
-      const regTel =
-        /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
+      const regTel = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
       if (regTel.test(value)) {
         return cb();
       }
@@ -86,7 +85,7 @@ export default {
         passWord: "",
         checkPass: "",
         certificatesType: "",
-        certificatesNo: "",
+        certificatesNo: ""
       },
       // 添加用户的校验
       addFormRules: {
@@ -96,8 +95,8 @@ export default {
             min: 3,
             max: 7,
             message: "用户名长度在 3 到 7 个字符",
-            trigger: "blur",
-          },
+            trigger: "blur"
+          }
         ],
         name: [
           { required: true, message: "请输入姓名", trigger: "blur" },
@@ -105,12 +104,12 @@ export default {
             min: 2,
             max: 4,
             message: "姓名长度在 2 到 4 个字符",
-            trigger: "blur",
-          },
+            trigger: "blur"
+          }
         ],
         phone: [
           { required: true, message: "请输入手机号", trigger: "blur" },
-          { validator: checkPhone, trigger: "blur" },
+          { validator: checkPhone, trigger: "blur" }
         ],
         passWord: [
           { required: true, message: "请输入密码", trigger: "blur" },
@@ -118,44 +117,64 @@ export default {
             min: 6,
             max: 15,
             message: "密码长度在 6 到 15 个字符",
-            trigger: "blur",
-          },
+            trigger: "blur"
+          }
         ],
         checkPass: [
           { required: true, message: "请再次输入密码", trigger: "blur" },
-          { validator: validatePass2, trigger: "blur" },
+          { validator: validatePass2, trigger: "blur" }
         ],
         certificatesType: [
-          { required: true, message: "请选择证件类型", trigger: "change" },
+          { required: true, message: "请选择证件类型", trigger: "change" }
         ],
         // 校验？
         certificatesNo: [
-          { required: true, message: "请输入证件号", trigger: "blur" },
-        ],
-      },
+          { required: true, message: "请输入证件号", trigger: "blur" }
+        ]
+      }
     };
   },
   methods: {
     handleClose() {
       // 清空表单内容
-      this.$refs.addFormRef.resetFields();
+      // this.$refs.addFormRef.resetFields();
       this.visible = false;
+      this.addForm = {};
     },
     // 提交
     handleOk() {
-      this.$refs.addFormRef.validate((vaild) => {
-        console.log("1", this.addForm);
-        this.$message.success("添加成功");
+      this.$refs.addFormRef.validate(vaild => {
         if (!vaild) {
           return this.$message.error("添加失败,请重新填写!");
         }
-        // addUser()
-        this.visible = false;
+        // console.log("1", this.addForm);
+        let data = {
+          userName: this.addForm.userName,
+          name: this.addForm.name,
+          phone: this.addForm.phone,
+          passWord: this.addForm.passWord,
+          certificatesType: this.addForm.certificatesType,
+          certificatesNo: this.addForm.certificatesNo,
+          status: 0 //默认是锁定的
+        };
+        addUser(data).then(res => {
+          if (res.data.code === 200) {
+            this.$message.success("添加成功");
+            this.visible = false;
+            this.$emit('refresh')
+          } else {
+            this.$message.error("添加失败");
+          }
+        })
+          .catch(err =>
+          {
+          console.log(err);
+        })
+
       });
-    },
-  },
+    }
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>
