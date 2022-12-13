@@ -2,7 +2,7 @@
   <div class="userList">
     <!-- 搜索与添加 -->
     <div class="search-row">
-      <el-form :inline="true" :model="queryInfo">
+      <el-form :inline="true" v-model="queryInfo">
         <el-form-item label="用户名:">
           <el-input
             placeholder="请输入用户名"
@@ -44,7 +44,7 @@
       </el-form>
     </div>
     <!-- 用户列表 -->
-    <el-table :data="userdata" border stripe>
+    <el-table :data="data" border stripe>
       <el-table-column type="index" label="#"></el-table-column>
       <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="name" label="姓名"></el-table-column>
@@ -94,7 +94,7 @@
       :page-sizes="[1, 3, 5, 7]"
       :page-size="100"
       layout="total, sizes, prev, pager, next"
-      :total="this.userdata.length"
+      :total="11"
     >
     </el-pagination>
 
@@ -109,50 +109,51 @@
 import { getUser, deleteUser } from "@/api/userManage.js";
 import AddUser from "./module/AddUser";
 import UpdateUser from "./module/UpdateUser.vue";
-// const data = [
-//   {
-//     id: 1,
-//     name: "admin",
-//     phone: "1111",
-//     passWord: "123456",
-//     certificatesType: "111",
-//     certificatesNo: "11111",
-//     status: 1,
-//     createTime: "2022-11-22T13:24:30.000+0000",
-//     updateTime: "2022-11-22T13:24:51.000+0000",
-//     isDeleted: 0
-//   },
-//   {
-//     id: 2,
-//     name: "heeh",
-//     phone: "1311",
-//     passWord: "123456",
-//     certificatesType: "111",
-//     certificatesNo: "11111",
-//     status: 1,
-//     createTime: "2022-11-22T13:24:30.000+0000",
-//     updateTime: "2022-11-22T13:24:51.000+0000",
-//     isDeleted: 0
-//   }
-// ];
+const data = [
+  {
+    id: 1,
+    name: "admin",
+    phone: "1111",
+    passWord: "123456",
+    certificatesType: "111",
+    certificatesNo: "11111",
+    status: 1,
+    createTime: "2022-11-22T13:24:30.000+0000",
+    updateTime: "2022-11-22T13:24:51.000+0000",
+    isDeleted: 0,
+  },
+  {
+    id: 2,
+    name: "heeh",
+    phone: "1311",
+    passWord: "123456",
+    certificatesType: "111",
+    certificatesNo: "11111",
+    status: 1,
+    createTime: "2022-11-22T13:24:30.000+0000",
+    updateTime: "2022-11-22T13:24:51.000+0000",
+    isDeleted: 0,
+  },
+];
 export default {
   components: {
     AddUser,
-    UpdateUser
+    UpdateUser,
   },
   data() {
     return {
-      // data,
-      userdata: [],
-      // 列表参数
+      data,
+      // 用户列表
+      userData: [],
       // 当前页数
       page: 1,
       // 当前每页显示多少数据
       limit: 5,
+      // 查询参数
       queryInfo: {
         name: "",
-        status: ""
-      }
+        status: "",
+      },
     };
   },
   created() {
@@ -162,11 +163,11 @@ export default {
     // 请求用户列表
     getUserList() {
       getUser(this.page, this.limit, this.queryInfo)
-        .then(res => {
+        .then((res) => {
           // console.log(res);
           if (res.data.code === 200) {
-            this.userdata = res.data.data.records;
-            this.userdata.forEach(item => {
+            this.userData = res.data.data.records;
+            this.userData.forEach((item) => {
               item.createTime = this.$moment(item.createTime).format(
                 "YYYY-MM-DD HH:mm:ss"
               );
@@ -174,16 +175,15 @@ export default {
                 "YYYY-MM-DD HH:mm:ss"
               );
             });
-            console.log(this.userdata);
           } else {
             this.$message.error("请求失败");
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     },
-    // 通过用户名搜索
+    // 通过关键词搜索
     handleSearch() {
       this.getUserList();
     },
@@ -210,14 +210,14 @@ export default {
       const confirmResult = await this.$confirm("确定要删除该用户吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
-      }).catch(err => err);
+        type: "warning",
+      }).catch((err) => err);
       // 用户确认删除, 返回字符串confirm
       // 用户取消删除, 返回字符串cancel
       if (confirmResult != "confirm") {
         return this.$message.info("已取消删除");
       }
-      deleteUser(id).then(res => {
+      deleteUser(id).then((res) => {
         if (res.data.code === 200) {
           this.$message.success("删除成功");
           this.getUserList();
@@ -225,39 +225,14 @@ export default {
           this.$message.error("删除失败");
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped lang="scss">
+@import "~@/styles/common.scss";
 .userList {
   margin: 25px;
-  // /deep/el-button {
-  //   &:focus {
-  //     background: purple;
-  //   }
-  // }
-  .search-row {
-    display: flex;
-    align-items: center;
-    // margin-bottom: 15px;
-    /deep/input:focus {
-      border: 1px solid #725fa6;
-    }
-    .my-btn {
-      color: #725fa6;
-      border: 1px solid #725fa6;
-      background-color: #e8e3f4;
-      &:hover {
-        background-color: #917ccb;
-        color: #fff;
-      }
-    }
-  }
-  .my-pagination {
-    float: right;
-    margin-top: 20px;
-  }
 }
 </style>

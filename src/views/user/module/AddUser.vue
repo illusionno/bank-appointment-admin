@@ -13,10 +13,10 @@
         ref="addFormRef"
         label-width="80px"
       >
-      <el-form-item label="用户名" prop="userName" >
+        <el-form-item label="用户名" prop="userName">
           <el-input v-model="addForm.userName"></el-input>
         </el-form-item>
-        <el-form-item label="姓名" prop="name" >
+        <el-form-item label="姓名" prop="name">
           <el-input v-model="addForm.name"></el-input>
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
@@ -80,11 +80,11 @@ export default {
       visible: false,
       // 确认密码（不传参）
       addForm: {
-        userName:"",
+        userName: "",
         name: "",
         phone: "",
         passWord: "",
-      checkPass: "",
+        checkPass: "",
         certificatesType: "",
         certificatesNo: "",
       },
@@ -144,12 +144,12 @@ export default {
     // 提交
     handleOk() {
       this.$refs.addFormRef.validate((vaild) => {
+        console.log("1", this.addForm);
+        this.$message.success("添加成功");
         if (!vaild) {
           return this.$message.error("添加失败,请重新填写!");
         }
-        console.log('1',this.addForm);
         // addUser()
-        this.$message.success("添加成功");
         this.visible = false;
       });
     },

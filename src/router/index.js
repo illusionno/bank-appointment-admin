@@ -72,7 +72,19 @@ export const constantRoutes = [
         path: 'index',
         name: 'Bank',
         component: () => import('@/views/bank/index'),
-        meta: { title: '银行管理', icon: 'form' }
+        meta: { title: '银行管理', icon: 'table' }
+      }
+    ]
+  },
+  {
+    path: '/service',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Service',
+        component: () => import('@/views/service/index'),
+        meta: { title: '业务管理', icon: 'form' }
       }
     ]
   },

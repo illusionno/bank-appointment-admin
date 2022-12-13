@@ -42,6 +42,7 @@ module.exports = {
     },
     after: require('./mock/mock-server.js')
   },
+  lintOnSave: false,
   configureWebpack: (config) => {
     config.resolve.alias = {
       // webpack默认里有这个配置
