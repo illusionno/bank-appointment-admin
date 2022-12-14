@@ -55,7 +55,7 @@
         label="证件类型"
       >
       <template slot-scope="scope">
-          <el-tag v-if="scope.row.certificatesType == '身份证'">身份证</el-tag>
+          <el-tag v-if="scope.row.certificatesType == 1">身份证</el-tag>
           <el-tag type="success" v-else>其他证件</el-tag>
         </template>
     </el-table-column>
@@ -109,7 +109,7 @@
     <!-- 添加用户对话框 -->
     <AddUser ref="addUser" @refresh="refresh"></AddUser>
     <!-- 编辑用户对话框 -->
-    <UpdateUser ref="updateUser"></UpdateUser>
+    <UpdateUser ref="updateUser" @refresh="refresh"></UpdateUser>
   </div>
 </template>
 
@@ -172,7 +172,7 @@ export default {
     getUserList() {
       getUser(this.page, this.limit, this.queryInfo)
         .then(res => {
-          // console.log(res);
+          console.log(res);
           if (res.data.code === 200) {
             this.userData = res.data.data.records;
             this.userData.forEach(item => {
@@ -184,7 +184,7 @@ export default {
               );
               // 0锁定 1正常
               item.status = item.status == 0 ? false : true;
-              item.certificatesType = item.certificatesType == '1'?'身份证':'其他证件'
+              // item.certificatesType = item.certificatesType == '1'?'身份证':'其他证件'
             });
           } else {
             this.$message.error("请求失败");
@@ -199,12 +199,15 @@ export default {
       this.getUserList();
     },
     // 监听pagesize事件
-    handleSizeChange(val) {
+    handleSizeChange(val)
+    {
       this.page = val;
       this.getUserList();
     },
     // 当前页改变
-    handleCurrentChange(val) {
+    handleCurrentChange(val)
+    {
+      console.log('1',val);
       this.limit = val;
       this.getUserList();
     },

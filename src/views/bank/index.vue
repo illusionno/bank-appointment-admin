@@ -44,7 +44,7 @@
       </el-form>
     </div>
     <!-- 银行列表 -->
-    <el-table :data="data" border stripe>
+    <el-table :data="bankData" border stripe>
       <el-table-column type="index" label="#"></el-table-column>
       <el-table-column prop="bankName" label="银行名称"></el-table-column>
       <el-table-column prop="bankCode" label="银行编号"></el-table-column>
@@ -94,12 +94,12 @@
       :page-sizes="[1, 3, 5, 7]"
       :page-size="100"
       layout="total, sizes, prev, pager, next"
-      :total="10"
+      :total="this.bankData.length"
     >
     </el-pagination>
 
     <!-- 添加银行对话框 -->
-    <AddBank ref="addBank"></AddBank>
+    <AddBank ref="addBank" @refresh="refresh"></AddBank>
     <!-- 编辑用户对话框 -->
     <UpdateBank ref="updateBank"></UpdateBank>
   </div>
@@ -155,27 +155,30 @@ export default {
       },
     };
   },
+  created()
+  {
+    this.getBankList()
+  },
   methods: {
     //请求银行列表
     getBankList() {
       getBank(this.page, this.limit, this.queryInfo)
         .then((res) => {
-          console.log(res);
-          // if (res.data.code === 200) {
-          //     this.bankData = res.data.data.records;
-          //     this.bankData.forEach((item) => {
-          //       item.createTime = this.$moment(item.createTime).format(
-          //         "YYYY-MM-DD HH:mm:ss"
-          //       );
-          //       item.updateTime = this.$moment(item.updateTime).format(
-          //         "YYYY-MM-DD HH:mm:ss"
-          //       );
+          if (res.data.code === 200) {
+              this.bankData = res.data.data.records;
+              this.bankData.forEach((item) => {
+                item.createTime = this.$moment(item.createTime).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                );
+                item.updateTime = this.$moment(item.updateTime).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                );
           // 0可预约 1不可预约
-          // item.status = item.status == 0 ? true : false;
-          //     });
-          //   } else {
-          //     this.$message.error("请求失败");
-          //   }
+          item.status = item.status == 0 ? true : false;
+              });
+            } else {
+              this.$message.error("请求失败");
+            }
         })
         .catch((err) => {
           console.log(err);
@@ -188,12 +191,12 @@ export default {
     // 监听pagesize事件
     handleSizeChange(val) {
       this.page = val;
-      // this.getBankList();
+      this.getBankList();
     },
     // 当前页改变
     handleCurrentChange(val) {
       this.limit = val;
-      // this.getBankList();
+      this.getBankList();
     },
     //显示添加银行对话框
     showAddBank() {
@@ -224,6 +227,10 @@ export default {
         }
       });
     },
+    refresh()
+    {
+      this.getBankList()
+    }
   },
 };
 </script>
