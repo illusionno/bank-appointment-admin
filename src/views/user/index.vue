@@ -44,7 +44,7 @@
       </el-form>
     </div>
     <!-- 用户列表 -->
-    <el-table :data="userData" border stripe>
+    <el-table :data="userData" border stripe v-loading="loading">
       <el-table-column type="index" label="#"></el-table-column>
       <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="name" label="姓名"></el-table-column>
@@ -158,6 +158,7 @@ export default {
   data() {
     return {
       data,
+      loading: false,
       // 用户列表
       userData: [],
       // 当前页数
@@ -177,6 +178,7 @@ export default {
   methods: {
     // 请求用户列表
     getUserList() {
+      this.loading = true;
       getUser(this.page, this.limit, this.queryInfo)
         .then((res) => {
           console.log(res);
@@ -193,6 +195,7 @@ export default {
               item.status = item.status == 0 ? false : true;
               // item.certificatesType = item.certificatesType == '1'?'身份证':'其他证件'
             });
+            this.loading = false;
           } else {
             this.$message.error("请求失败");
           }

@@ -54,7 +54,7 @@
     </div>
 
     <!-- 银行列表 -->
-    <el-table :data="bookData" border stripe>
+    <el-table :data="bookData" border stripe v-loading="loading">
       <el-table-column type="index" label="#"></el-table-column>
       <el-table-column prop="bankName" label="银行名称"></el-table-column>
       <el-table-column prop="businessName" label="业务名称"></el-table-column>
@@ -89,7 +89,7 @@
           ></el-button>
           <!-- 删除按钮 -->
           <el-button
-            plain
+            plagitin
             type="danger"
             icon="el-icon-delete"
             size="mini"
@@ -145,7 +145,8 @@ export default {
   },
   data() {
     return {
-      data,
+      // data,
+      loading: false,
       bookData: [],
       // 当前页数
       page: 1,
@@ -164,6 +165,7 @@ export default {
   },
   methods: {
     getBookList() {
+      this.loading = true;
       getBook(this.page, this.limit)
         .then((res) => {
           if (res.data.code === 200) {
@@ -178,6 +180,7 @@ export default {
               item.updateTime = this.$moment(item.updateTime).format(
                 "YYYY-MM-DD HH:mm:ss"
               );
+              this.loading = false;
               // 0可预约 1不可预约
               // item.status = item.status == 0 ? true : false;
             });
@@ -189,7 +192,9 @@ export default {
           console.log(err);
         });
     },
-    handleSearch() {},
+    handleSearch() {
+      this.getBookList();
+    },
     // 监听pagesize事件
     handleSizeChange(val) {
       this.page = val;

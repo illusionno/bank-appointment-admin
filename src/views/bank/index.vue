@@ -44,7 +44,7 @@
       </el-form>
     </div>
     <!-- 银行列表 -->
-    <el-table :data="bankData" border stripe>
+    <el-table :data="bankData" border stripe v-loading="loading">
       <el-table-column type="index" label="#"></el-table-column>
       <el-table-column prop="bankName" label="银行名称"></el-table-column>
       <el-table-column prop="bankCode" label="银行编号"></el-table-column>
@@ -154,6 +154,7 @@ export default {
   data() {
     return {
       data,
+      loading: false,
       bankData: [],
       // 当前页数
       page: 1,
@@ -172,6 +173,7 @@ export default {
   methods: {
     //请求银行列表
     getBankList() {
+      this.loading = true;
       getBank(this.page, this.limit, this.queryInfo)
         .then((res) => {
           if (res.data.code === 200) {
@@ -186,6 +188,7 @@ export default {
               // 0可预约 1不可预约
               item.status = item.status == 0 ? true : false;
             });
+            this.loading = false;
           } else {
             this.$message.error("请求失败");
           }
