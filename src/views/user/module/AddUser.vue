@@ -14,19 +14,26 @@
         label-width="80px"
       >
         <el-form-item label="用户名" prop="userName">
-          <el-input v-model="addForm.userName"></el-input>
+          <el-input
+            v-model="addForm.userName"
+            placeholder="请输入用户名"
+          ></el-input>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="addForm.name"></el-input>
+          <el-input v-model="addForm.name" placeholder="请输入姓名"></el-input>
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
-          <el-input v-model="addForm.phone"></el-input>
+          <el-input
+            v-model="addForm.phone"
+            placeholder="请输入手机号"
+          ></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="passWord">
           <el-input
             v-model="addForm.passWord"
             autocomplete="off"
             show-password
+            placeholder="请输入密码"
           ></el-input>
         </el-form-item>
         <el-form-item label="确认密码" prop="checkPass">
@@ -34,6 +41,7 @@
             v-model="addForm.checkPass"
             autocomplete="off"
             show-password
+            placeholder="请再次输入密码"
           ></el-input>
         </el-form-item>
         <el-form-item label="证件类型" prop="certificatesType">
@@ -43,7 +51,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="证件号" prop="certificatesNo">
-          <el-input v-model="addForm.certificatesNo"></el-input>
+          <el-input
+            v-model="addForm.certificatesNo"
+            placeholder="请输入证件号"
+          ></el-input>
         </el-form-item>
       </el-form>
       <!-- 底部区 -->
@@ -62,7 +73,8 @@ export default {
   data() {
     // 验证手机号规则
     let checkPhone = (rule, value, cb) => {
-      const regTel = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
+      const regTel =
+        /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
       if (regTel.test(value)) {
         return cb();
       }
@@ -85,7 +97,7 @@ export default {
         passWord: "",
         checkPass: "",
         certificatesType: "",
-        certificatesNo: ""
+        certificatesNo: "",
       },
       // 添加用户的校验
       addFormRules: {
@@ -95,8 +107,8 @@ export default {
             min: 3,
             max: 7,
             message: "用户名长度在 3 到 7 个字符",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         name: [
           { required: true, message: "请输入姓名", trigger: "blur" },
@@ -104,12 +116,12 @@ export default {
             min: 2,
             max: 4,
             message: "姓名长度在 2 到 4 个字符",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         phone: [
           { required: true, message: "请输入手机号", trigger: "blur" },
-          { validator: checkPhone, trigger: "blur" }
+          { validator: checkPhone, trigger: "blur" },
         ],
         passWord: [
           { required: true, message: "请输入密码", trigger: "blur" },
@@ -117,21 +129,21 @@ export default {
             min: 6,
             max: 15,
             message: "密码长度在 6 到 15 个字符",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         checkPass: [
           { required: true, message: "请再次输入密码", trigger: "blur" },
-          { validator: validatePass2, trigger: "blur" }
+          { validator: validatePass2, trigger: "blur" },
         ],
         certificatesType: [
-          { required: true, message: "请选择证件类型", trigger: "change" }
+          { required: true, message: "请选择证件类型", trigger: "change" },
         ],
         // 校验？
         certificatesNo: [
-          { required: true, message: "请输入证件号", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "请输入证件号", trigger: "blur" },
+        ],
+      },
     };
   },
   methods: {
@@ -143,7 +155,7 @@ export default {
     },
     // 提交
     handleOk() {
-      this.$refs.addFormRef.validate(vaild => {
+      this.$refs.addFormRef.validate((vaild) => {
         if (!vaild) {
           return this.$message.error("添加失败,请重新填写!");
         }
@@ -155,25 +167,24 @@ export default {
           passWord: this.addForm.passWord,
           certificatesType: this.addForm.certificatesType,
           certificatesNo: this.addForm.certificatesNo,
-          status: 0 //默认是锁定的
+          status: 0, //默认是锁定的
         };
-        addUser(data).then(res => {
-          if (res.data.code === 200) {
-            this.$message.success("添加成功");
-            this.visible = false;
-            this.$emit('refresh')
-          } else {
-            this.$message.error("添加失败");
-          }
-        })
-          .catch(err =>
-          {
-          console.log(err);
-        })
-
+        addUser(data)
+          .then((res) => {
+            if (res.data.code === 200) {
+              this.$message.success("添加成功");
+              this.visible = false;
+              this.$emit("refresh");
+            } else {
+              this.$message.error("添加失败");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

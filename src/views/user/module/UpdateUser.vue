@@ -13,10 +13,10 @@
         ref="editFormRef"
         label-width="80px"
       >
-      <el-form-item label="用户id" width="300px">
+        <el-form-item label="用户id" width="300px">
           <el-input v-model="editForm.id" disabled></el-input>
         </el-form-item>
-           <el-form-item label="用户名" prop="userName" width="300px">
+        <el-form-item label="用户名" prop="userName" width="300px">
           <el-input v-model="editForm.userName"></el-input>
         </el-form-item>
         <el-form-item label="姓名" prop="name" disabled width="300px">
@@ -27,14 +27,8 @@
         </el-form-item>
         <el-form-item label="证件类型" prop="certificatesType">
           <el-select v-model="editForm.certificatesType" placeholder="请选择">
-            <!-- <el-option
-            v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            > -->
-            <el-option label="身份证" :value="1"></el-option>
-            <el-option label="其他证件" :value="2"></el-option>
+            <el-option label="身份证" value="1"></el-option>
+            <el-option label="其他证件" value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="证件号" prop="certificatesNo">
@@ -57,7 +51,8 @@ export default {
   data() {
     // 验证手机号规则
     let checkPhone = (rule, value, cb) => {
-      const regTel = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
+      const regTel =
+        /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
       if (regTel.test(value)) {
         return cb();
       }
@@ -83,13 +78,13 @@ export default {
       //   }
       // ],
       editForm: {
-        userName:"",
+        userName: "",
         name: "",
         phone: "",
         passWord: "",
         checkPass: "",
-        certificatesType: this.certificatesType == 1?'身份证':'其他证件',
-        certificatesNo: ""
+        certificatesType: "",
+        certificatesNo: "",
       },
       // 添加用户的校验
       editFormRules: {
@@ -98,22 +93,22 @@ export default {
           {
             min: 3,
             max: 7,
-            message: "用户名长度在 3 到 5 个字符",
-            trigger: "blur"
-          }
+            message: "用户名长度在 3 到 7 个字符",
+            trigger: "blur",
+          },
         ],
         name: [
           { required: true, message: "请输入姓名", trigger: "blur" },
           {
             min: 2,
             max: 4,
-            message: "姓名长度在 3 到 5 个字符",
-            trigger: "blur"
-          }
+            message: "姓名长度在 2 到 4 个字符",
+            trigger: "blur",
+          },
         ],
-        phone:[
+        phone: [
           { required: true, message: "请输入手机号", trigger: "blur" },
-          { validator: checkPhone, trigger: "blur" }
+          { validator: checkPhone, trigger: "blur" },
         ],
         // passWord: [
         //   { required: true, message: "请输入密码", trigger: "blur" },
@@ -129,13 +124,13 @@ export default {
         //   { validator: validatePass2, trigger: "blur" },
         // ],
         certificatesType: [
-          { required: true, message: "请选择证件类型", trigger: "change" }
+          { required: true, message: "请选择证件类型", trigger: "change" },
         ],
         // 校验？
         certificatesNo: [
-          { required: true, message: "请输入证件号", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "请输入证件号", trigger: "blur" },
+        ],
+      },
     };
   },
   methods: {
@@ -148,27 +143,31 @@ export default {
     },
     // 提交
     handleOk() {
-      this.$refs.editFormRef.validate(vaild => {
+      this.$refs.editFormRef.validate((vaild) => {
         if (!vaild) {
-          return this.$message.error("添加失败,请重新填写!");
+          return this.$message.error("更新失败,请重新填写!");
         }
-        console.log('editForm', this.editForm);
-        updateUser(this.editForm).then(res =>
-        {
-          console.log(res);
-          if (res.data.code === 200) {
-            this.$message.success("添加成功");
-            this.$emit('refresh')
-          }
-        })
-          .catch(err =>
-          {
-          console.log(err);
-        })
+        console.log("editForm", this.editForm);
+        this.editForm.status = this.editForm.status == true ? 1 : 0;
+        delete this.editForm.updateTime;
+        delete this.editForm.createTime;
+        updateUser(this.editForm)
+          .then((res) => {
+            console.log(res);
+            if (res.data.code === 200) {
+              this.$message.success("更新成功");
+              this.$emit("refresh");
+            } else {
+              this.$message.error("更新失败");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
         this.visible = false;
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

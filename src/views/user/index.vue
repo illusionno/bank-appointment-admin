@@ -50,28 +50,35 @@
       <el-table-column prop="name" label="姓名"></el-table-column>
       <el-table-column prop="phone" label="手机号码"></el-table-column>
       <el-table-column prop="passWord" label="密码"></el-table-column>
-      <el-table-column
-        prop="certificatesType"
-        label="证件类型"
-      >
-      <template slot-scope="scope">
+      <el-table-column prop="certificatesType" label="证件类型">
+        <template slot-scope="scope">
           <el-tag v-if="scope.row.certificatesType == 1">身份证</el-tag>
           <el-tag type="success" v-else>其他证件</el-tag>
         </template>
-    </el-table-column>
-      <el-table-column prop="certificatesNo" label="证件号码">
-
       </el-table-column>
-      <el-table-column prop="status" label="状态">
+      <el-table-column prop="certificatesNo" label="证件号码">
+      </el-table-column>
+      <el-table-column prop="status" label="状态" width="100">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
             active-color="#917ccb"
+            @change="userStatuschange(scope.row)"
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间"></el-table-column>
-      <el-table-column prop="updateTime" label="删除时间"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间">
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          <span>{{ scope.row.createTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="updateTime" label="更新时间">
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          <span>{{ scope.row.updateTime }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <!-- 修改按钮 -->
@@ -114,7 +121,7 @@
 </template>
 
 <script>
-import { getUser, deleteUser } from "@/api/userManage.js";
+import { getUser, deleteUser, updateUser } from "@/api/userManage.js";
 import AddUser from "./module/AddUser";
 import UpdateUser from "./module/UpdateUser.vue";
 const data = [
@@ -128,7 +135,7 @@ const data = [
     status: true,
     createTime: "2022-11-22T13:24:30.000+0000",
     updateTime: "2022-11-22T13:24:51.000+0000",
-    isDeleted: 0
+    isDeleted: 0,
   },
   {
     id: 2,
@@ -140,13 +147,13 @@ const data = [
     status: false,
     createTime: "2022-11-22T13:24:30.000+0000",
     updateTime: "2022-11-22T13:24:51.000+0000",
-    isDeleted: 0
-  }
+    isDeleted: 0,
+  },
 ];
 export default {
   components: {
     AddUser,
-    UpdateUser
+    UpdateUser,
   },
   data() {
     return {
@@ -160,8 +167,8 @@ export default {
       // 查询参数
       queryInfo: {
         name: "",
-        status: ""
-      }
+        status: "",
+      },
     };
   },
   created() {
@@ -171,11 +178,11 @@ export default {
     // 请求用户列表
     getUserList() {
       getUser(this.page, this.limit, this.queryInfo)
-        .then(res => {
+        .then((res) => {
           console.log(res);
           if (res.data.code === 200) {
             this.userData = res.data.data.records;
-            this.userData.forEach(item => {
+            this.userData.forEach((item) => {
               item.createTime = this.$moment(item.createTime).format(
                 "YYYY-MM-DD HH:mm:ss"
               );
@@ -190,7 +197,7 @@ export default {
             this.$message.error("请求失败");
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     },
@@ -199,15 +206,13 @@ export default {
       this.getUserList();
     },
     // 监听pagesize事件
-    handleSizeChange(val)
-    {
+    handleSizeChange(val) {
       this.page = val;
       this.getUserList();
     },
     // 当前页改变
-    handleCurrentChange(val)
-    {
-      console.log('1',val);
+    handleCurrentChange(val) {
+      console.log("1", val);
       this.limit = val;
       this.getUserList();
     },
@@ -219,7 +224,26 @@ export default {
     showUpdateUser(record) {
       this.$refs.updateUser.visible = true;
       this.$refs.updateUser.edit(record);
-
+    },
+    // 用户状态改变
+    userStatuschange(val) {
+      val.status = val.status == true ? 1 : 0;
+      delete val.updateTime;
+      delete val.createTime;
+      console.log("change", val);
+      updateUser(val)
+        .then((res) => {
+          console.log(res);
+          if (res.data.code === 200) {
+            this.$message.success("更新成功");
+            this.getUserList();
+          } else {
+            this.$message.error("更新失败");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     // 通过id删除用户
     async deleteUserById(id) {
@@ -227,14 +251,14 @@ export default {
       const confirmResult = await this.$confirm("确定要删除该用户吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
-      }).catch(err => err);
+        type: "warning",
+      }).catch((err) => err);
       // 用户确认删除, 返回字符串confirm
       // 用户取消删除, 返回字符串cancel
       if (confirmResult != "confirm") {
         return this.$message.info("已取消删除");
       }
-      deleteUser(id).then(res => {
+      deleteUser(id).then((res) => {
         console.log(res);
         if (res.data.code === 200) {
           this.$message.success("删除成功");
@@ -246,8 +270,8 @@ export default {
     },
     refresh() {
       this.getUserList();
-    }
-  }
+    },
+  },
 };
 </script>
 

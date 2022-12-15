@@ -28,3 +28,13 @@ export function addBank(data)
     data
   })
 }
+
+// 更新银行
+export function updateBank(data)
+{
+  return request({
+    url: `system/bank/update`,
+    method: 'post',
+    data
+  })
+}

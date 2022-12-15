@@ -14,19 +14,26 @@
         label-width="100px"
       >
         <el-form-item label="银行名称" prop="bankName">
-          <el-select v-model="addForm.bankName" placeholder="请选择">
+          <el-select v-model="addForm.bankName" placeholder="请选择" clearable>
             <el-option label="中国银行" :value="1"></el-option>
             <el-option label="建设银行" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="业务名称" prop="businessBank">
-          <el-select v-model="addForm.businessBank" placeholder="请选择">
+          <el-select
+            v-model="addForm.businessBank"
+            placeholder="请选择"
+            clearable
+          >
             <el-option label="取钱" :value="1"></el-option>
             <el-option label="存钱" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="预约人" prop="userName">
-          <el-input v-model="addForm.userName"></el-input>
+          <el-input
+            v-model="addForm.userName"
+            placeholder="请输入预约人"
+          ></el-input>
         </el-form-item>
 
         <el-form-item label="预约时间" prop="appointmentTime">
@@ -82,6 +89,7 @@ export default {
       // 清空表单内容
       // this.$refs.addFormRef.resetFields();
     },
+    handleOk() {},
   },
 };
 </script>

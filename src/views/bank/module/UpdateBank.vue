@@ -8,31 +8,31 @@
       @close="handleClose"
     >
       <el-form
-        :model="addForm"
-        :rules="addFormRules"
-        ref="addFormRef"
+        :model="editForm"
+        :rules="editFormRules"
+        ref="editFormRef"
         label-width="100px"
       >
         <el-form-item label="银行名称" prop="bankName">
-          <el-input v-model="addForm.bankName"></el-input>
+          <el-input v-model="editForm.bankName"></el-input>
         </el-form-item>
         <el-form-item label="银行编号" prop="bankCode">
-          <el-input v-model="addForm.bankCode"></el-input>
+          <el-input v-model="editForm.bankCode"></el-input>
         </el-form-item>
         <el-form-item label="银行地址" prop="address">
-          <el-input v-model="addForm.address"></el-input>
+          <el-input v-model="editForm.address"></el-input>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="addForm.status" placeholder="请选择">
-            <el-option label="可预约" :value="1"></el-option>
-            <el-option label="不可预约" :value="2"></el-option>
+        <!-- <el-form-item label="状态" prop="status">
+          <el-select v-model="editForm.status" placeholder="请选择">
+            <el-option label="可预约" :value="true"></el-option>
+            <el-option label="不可预约" :value="false"></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="联系人" prop="contactsName">
-          <el-input v-model="addForm.contactsName"></el-input>
+          <el-input v-model="editForm.contactsName"></el-input>
         </el-form-item>
         <el-form-item label="联系人电话" prop="contactsPhone">
-          <el-input v-model="addForm.contactsPhone"></el-input>
+          <el-input v-model="editForm.contactsPhone"></el-input>
         </el-form-item>
       </el-form>
       <!-- 底部区 -->
@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import { updateBank } from "@/api/bank.js";
 export default {
   name: "UpdateBank",
   data() {
@@ -59,16 +60,16 @@ export default {
     };
     return {
       visible: false,
-      addForm: {
+      editForm: {
         bankName: "",
         bankCode: "",
         address: "",
-        status: "",
+        // status: "",
         contactsName: "",
         contactsPhone: "",
       },
       // 添加银行的校验
-      addFormRules: {
+      editFormRules: {
         bankName: [
           { required: true, message: "请输入用户名", trigger: "blur" },
         ],
@@ -90,24 +91,35 @@ export default {
     };
   },
   methods: {
+    edit(data) {
+      console.log(data);
+      this.editForm = data;
+    },
     handleClose() {
       this.visible = false;
-      // 清空表单内容
-      setTimeout(() => {
-        this.$refs.addFormRef.resetFields();
-      }, 3000);
-      // this.$refs.addFormRef.resetFields();
+      this.editForm = {};
     },
     // 提交
     handleOk() {
-      this.$refs.addFormRef.validate((vaild) => {
+      this.$refs.editFormRef.validate((vaild) => {
         this.$message.success("添加成功");
         if (!vaild) {
           return this.$message.error("添加失败,请重新填写!");
         }
-        console.log("1", this.addForm);
-
+        this.editForm.status = this.editForm.status == true ? 0 : false;
+        delete this.editForm.updateTime;
+        delete this.editForm.createTime;
+        console.log("提交data", this.editForm);
         // addUser()
+        updateBank(this.editForm).then((res) => {
+          console.log(res);
+          if (res.data.code === 200) {
+            this.$message.success("更新成功");
+            this.$emit("refresh");
+          } else {
+            this.$message.error("更新失败");
+          }
+        });
         this.visible = false;
       });
     },

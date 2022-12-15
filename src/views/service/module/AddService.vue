@@ -14,10 +14,10 @@
         label-width="100px"
       >
         <el-form-item label="银行名称" prop="bankName">
-          <el-input
-            v-model="addForm.bankName"
-            placeholder="请输入银行名称"
-          ></el-input>
+          <el-select v-model="addForm.bankName" placeholder="请选择">
+            <el-option label="中国银行" :value="1"></el-option>
+            <el-option label="建设银行" :value="2"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="业务名称" prop="businessName">
           <el-input
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { addService } from "@/api/service.js";
 export default {
   name: "AddService",
   data() {
@@ -48,10 +49,10 @@ export default {
       // 添加业务的校验
       addFormRules: {
         bankName: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
+          { required: true, message: "请选择银行名称", trigger: "change" },
         ],
         businessName: [
-          { required: true, message: "请输入业务名称号", trigger: "blur" },
+          { required: true, message: "请输入业务名称", trigger: "blur" },
         ],
       },
     };
@@ -59,6 +60,7 @@ export default {
   methods: {
     handleClose() {
       this.visible = false;
+      this.addForm = {};
     },
     handleOk() {
       this.$refs.addFormRef.validate((vaild) => {
@@ -67,8 +69,19 @@ export default {
           return this.$message.error("添加失败,请重新填写!");
         }
         console.log("1", this.addForm);
-        // addUser()
-        this.visible = false;
+        addService(this.addForm)
+          .then((res) => {
+            if (res.data.code === 200) {
+              this.$message.success("添加成功");
+              this.visible = false;
+              this.$emit("refresh");
+            } else {
+              this.$message.error("添加失败");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       });
     },
   },

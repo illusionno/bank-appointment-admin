@@ -54,25 +54,29 @@
     </div>
 
     <!-- 银行列表 -->
-    <el-table :data="data" border stripe>
+    <el-table :data="bookData" border stripe>
       <el-table-column type="index" label="#"></el-table-column>
       <el-table-column prop="bankName" label="银行名称"></el-table-column>
-      <el-table-column prop="businessBank" label="业务名称"></el-table-column>
-      <!-- <el-table-column prop="status" label="状态">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status"
-            active-color="#917ccb"
-          ></el-switch>
-        </template>
-      </el-table-column> -->
+      <el-table-column prop="businessName" label="业务名称"></el-table-column>
       <el-table-column prop="userName" label="预约人"></el-table-column>
-      <el-table-column
-        prop="appointmentTime"
-        label="预约时间"
-      ></el-table-column>
-      <el-table-column prop="createTime" label="创建时间"></el-table-column>
-      <el-table-column prop="updateTime" label="删除时间"></el-table-column>
+      <el-table-column prop="appointmentTime" label="预约时间">
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          <span>{{ scope.row.appointmentTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="createTime" label="创建时间">
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          <span>{{ scope.row.createTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="updateTime" label="更新时间">
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          <span>{{ scope.row.updateTime }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <!-- 修改按钮 -->
@@ -103,7 +107,7 @@
       :page-sizes="[1, 3, 5, 7]"
       :page-size="100"
       layout="total, sizes, prev, pager, next"
-      :total="10"
+      :total="this.bookData.length"
     >
     </el-pagination>
     <AddBook ref="addBook"></AddBook>
@@ -111,7 +115,9 @@
 </template>
 
 <script>
+import { getBook, deleteBook } from "@/api/book.js";
 import AddBook from "./module/AddBook.vue";
+
 const data = [
   {
     id: 1,
@@ -153,7 +159,36 @@ export default {
       },
     };
   },
+  created() {
+    this.getBookList();
+  },
   methods: {
+    getBookList() {
+      getBook(this.page, this.limit)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.bookData = res.data.data.records;
+            this.bookData.forEach((item) => {
+              item.appointmentTime = this.$moment(item.appointmentTime).format(
+                "YYYY-MM-DD HH:mm:ss"
+              );
+              item.createTime = this.$moment(item.createTime).format(
+                "YYYY-MM-DD HH:mm:ss"
+              );
+              item.updateTime = this.$moment(item.updateTime).format(
+                "YYYY-MM-DD HH:mm:ss"
+              );
+              // 0可预约 1不可预约
+              // item.status = item.status == 0 ? true : false;
+            });
+          } else {
+            this.$message.error("请求失败");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     handleSearch() {},
     // 监听pagesize事件
     handleSizeChange(val) {
@@ -170,6 +205,27 @@ export default {
     },
     showUpdateBook() {
       // this.$refs.updateBook.visible = true;
+    },
+    //删除预约
+    async deleteBookById(id) {
+      const confirmResult = await this.$confirm("确定要删除该银行吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).catch((err) => err);
+      // 用户确认删除, 返回字符串confirm
+      // 用户取消删除, 返回字符串cancel
+      if (confirmResult != "confirm") {
+        return this.$message.info("已取消删除");
+      }
+      deleteBook(id).then((res) => {
+        if (res.data.code === 200) {
+          this.$message.success("删除成功");
+          this.getBookList();
+        } else {
+          this.$message.error("删除失败");
+        }
+      });
     },
   },
 };

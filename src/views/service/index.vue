@@ -43,12 +43,23 @@
       </el-form>
     </div>
     <!--银行业务列表 -->
-    <el-table :data="data" border stripe>
+    <el-table :data="serviceData" border stripe>
       <el-table-column type="index" label="#"></el-table-column>
       <el-table-column prop="bankName" label="银行名称"></el-table-column>
       <el-table-column prop="businessName" label="业务名称"></el-table-column>
-      <el-table-column prop="createTime" label="创建时间"></el-table-column>
-      <el-table-column prop="updateTime" label="删除时间"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间">
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          <span>{{ scope.row.createTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="updateTime" label="更新时间"
+        >、
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          <span>{{ scope.row.updateTime }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <!-- 修改按钮 -->
@@ -57,7 +68,7 @@
             type="primary"
             icon="el-icon-edit"
             size="mini"
-            @click="showUpdateService"
+            @click="showUpdateService(scope.row)"
           ></el-button>
           <!-- 删除按钮 -->
           <el-button
@@ -79,11 +90,11 @@
       :page-sizes="[1, 3, 5, 7]"
       :page-size="100"
       layout="total, sizes, prev, pager, next"
-      :total="10"
+      :total="this.serviceData.length"
     >
     </el-pagination>
     <!-- 添加业务对话框 -->
-    <AddService ref="addService"></AddService>
+    <AddService ref="addService" @refresh="refresh"></AddService>
     <UpdateService ref="updateService"></UpdateService>
   </div>
 </template>
@@ -132,29 +143,60 @@ export default {
       },
     };
   },
+  created() {
+    this.getServiceList();
+  },
   methods: {
     // 获取业务列表
     getServiceList() {
-      getService(this.page, this.limit, this.queryInfo)
+      let data = {
+        businessName: this.queryInfo.businessName,
+      };
+      getService(this.page, this.limit, data)
         .then((res) => {
           console.log(res);
-          // if (res.data.code === 200) {
-          //     this.serviceData = res.data.data.records;
-          //     this.serviceData.forEach((item) => {
-          //       item.createTime = this.$moment(item.createTime).format(
-          //         "YYYY-MM-DD HH:mm:ss"
-          //       );
-          //       item.updateTime = this.$moment(item.updateTime).format(
-          //         "YYYY-MM-DD HH:mm:ss"
-          //       );
-          //   } else {
-          //     this.$message.error("请求失败");
-          //   }
+          if (res.data.code === 200) {
+            this.serviceData = res.data.data.records;
+            this.serviceData.forEach((item) => {
+              item.createTime = this.$moment(item.createTime).format(
+                "YYYY-MM-DD HH:mm:ss"
+              );
+              item.updateTime = this.$moment(item.updateTime).format(
+                "YYYY-MM-DD HH:mm:ss"
+              );
+            });
+          } else {
+            this.$message.error("请求失败");
+          }
         })
         .catch((err) => {
           console.log(err);
         });
     },
+    //请求银行列表
+    // getBankList() {
+    //   getBank(this.page, this.limit, this.queryInfo)
+    //     .then((res) => {
+    //       if (res.data.code === 200) {
+    //         this.bankData = res.data.data.records;
+    //         this.bankData.forEach((item) => {
+    //           item.createTime = this.$moment(item.createTime).format(
+    //             "YYYY-MM-DD HH:mm:ss"
+    //           );
+    //           item.updateTime = this.$moment(item.updateTime).format(
+    //             "YYYY-MM-DD HH:mm:ss"
+    //           );
+    //           // 0可预约 1不可预约
+    //           item.status = item.status == 0 ? true : false;
+    //         });
+    //       } else {
+    //         this.$message.error("请求失败");
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // },
     // 通过关键词搜索
     handleSearch() {
       this.getServiceList();
@@ -162,20 +204,21 @@ export default {
     // 监听pagesize事件
     handleSizeChange(val) {
       this.page = val;
-      // this.getServiceList();
+      this.getServiceList();
     },
     // 当前页改变
     handleCurrentChange(val) {
       this.limit = val;
-      // this.getServiceList();
+      this.getServiceList();
     },
     //显示添加业务对话框
     showAddService() {
       this.$refs.addService.visible = true;
     },
     //显示更新业务对话框
-    showUpdateService() {
+    showUpdateService(record) {
       this.$refs.updateService.visible = true;
+      this.$refs.updateService.edit(record);
     },
     // 通过id删除业务
     async deleteServiceById(id) {
@@ -197,6 +240,9 @@ export default {
           this.$message.error("删除失败");
         }
       });
+    },
+    refresh() {
+      this.getServiceList();
     },
   },
 };
