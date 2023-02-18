@@ -1,19 +1,15 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
-  </div>
+<h1>欢迎登录银行预约管理系统！</h1>
+</div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+
 
 export default {
   name: 'Dashboard',
-  computed: {
-    ...mapGetters([
-      'name'
-    ])
-  }
+
 }
 </script>
 

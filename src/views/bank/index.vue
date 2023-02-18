@@ -102,10 +102,10 @@
       class="my-pagination"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :page-sizes="[1, 3, 5, 7]"
+      :page-sizes="[3, 5, 7]"
       :page-size="100"
       layout="total, sizes, prev, pager, next"
-      :total="this.bankData.length"
+      :total="total"
     >
     </el-pagination>
 
@@ -160,6 +160,7 @@ export default {
       page: 1,
       // 当前每页显示多少数据
       limit: 5,
+      total:0,
       // 查询参数
       queryInfo: {
         bankName: "",
@@ -178,6 +179,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.bankData = res.data.data.records;
+            this.total = res.data.data.total
             this.bankData.forEach((item) => {
               item.createTime = this.$moment(item.createTime).format(
                 "YYYY-MM-DD HH:mm:ss"
@@ -203,12 +205,12 @@ export default {
     },
     // 监听pagesize事件
     handleSizeChange(val) {
-      this.page = val;
+      this.limit = val;
       this.getBankList();
     },
     // 当前页改变
     handleCurrentChange(val) {
-      this.limit = val;
+      this.page = val;
       this.getBankList();
     },
     //显示添加银行对话框

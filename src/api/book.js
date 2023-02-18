@@ -19,7 +19,7 @@ export function deleteBook(id)
   })
 }
 
-// 添加约
+// 添加预约
 export function addBook(data)
 {
   return request({
@@ -29,11 +29,20 @@ export function addBook(data)
   })
 }
 
-// 更新约
+// 更新预约
 export function updateBook(data)
 {
   return request({
     url: `book/update`,
+    method: 'post',
+    data
+  })
+}
+// 根据银行名称查找预约
+export function getRefundsByName(data)
+{
+  return request({
+    url: `refundInfo/getAllRefunds`,
     method: 'post',
     data
   })

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    let arr = [1,2,3,4,5]
+    console.log(arr.splice(1))
+    let map = new Map()
+    map.set(['a'],'apple')
+    map.set('b','kiwi')
+    console.log(map)
+    console.log(map.get(['a']))
+
+    for(let [k] of map){
+      console.log(k)
+    }
+    for(let k of map.keys()){
+    console.log(k)
+    }
+    //value
+    for(let [,v] of map){
+      console.log(v)
+    }
+    const map1 = new WeakMap();
+    // TypeError: 1 is not an object!
+    map1.set(Symbol(), 2)
+    console.log(map1)
+
+  </script>
+</body>
+</html>

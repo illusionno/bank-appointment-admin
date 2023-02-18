@@ -10,6 +10,15 @@ export function getService(page,limit,data)
   })
 }
 
+// 所有银行列表
+export function getAllBank(isTrue)
+{
+  return request({
+    url: `system/bank/getAllBank/${isTrue}`,
+    method: 'get',
+  })
+}
+
 // 根据id删除业务
 export function deleteService(id)
 {

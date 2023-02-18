@@ -106,10 +106,11 @@
       class="my-pagination"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :page-sizes="[1, 3, 5, 7]"
+      :page-sizes="[ 3, 5, 7]"
       :page-size="100"
+      :current-page.sync="page"
       layout="total, sizes, prev, pager, next"
-      :total="this.userData.length"
+      :total="total"
     >
     </el-pagination>
 
@@ -164,7 +165,8 @@ export default {
       // 当前页数
       page: 1,
       // 当前每页显示多少数据
-      limit: 5,
+      limit: 3,
+      total:0,
       // 查询参数
       queryInfo: {
         name: "",
@@ -184,6 +186,7 @@ export default {
           console.log(res);
           if (res.data.code === 200) {
             this.userData = res.data.data.records;
+            this.total = res.data.data.total
             this.userData.forEach((item) => {
               item.createTime = this.$moment(item.createTime).format(
                 "YYYY-MM-DD HH:mm:ss"
@@ -210,13 +213,14 @@ export default {
     },
     // 监听pagesize事件
     handleSizeChange(val) {
-      this.page = val;
+      // console.log(`每页 ${val} 条`);
+      this.limit = val;
       this.getUserList();
     },
     // 当前页改变
     handleCurrentChange(val) {
-      console.log("1", val);
-      this.limit = val;
+      console.log(`当前页: ${val}`);
+      this.page= val;
       this.getUserList();
     },
     // 显示添加用户对话框

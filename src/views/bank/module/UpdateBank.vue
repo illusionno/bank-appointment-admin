@@ -1,8 +1,7 @@
 <template>
   <div>
-    <!-- 添加用户对话框-->
     <el-dialog
-      title="添加用户"
+      title="更新银行"
       :visible.sync="visible"
       width="50%"
       @close="handleClose"
@@ -92,7 +91,7 @@ export default {
   },
   methods: {
     edit(data) {
-      console.log(data);
+      // console.log(data);
       this.editForm = data;
     },
     handleClose() {

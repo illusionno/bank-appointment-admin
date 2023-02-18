@@ -23,7 +23,7 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="预约人:">
+        <!-- <el-form-item label="预约人:">
           <el-input
             placeholder="请输入预约人"
             clearable
@@ -32,7 +32,7 @@
             style="width: 150px"
           >
           </el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-button
             type="primary"
@@ -85,11 +85,11 @@
             type="primary"
             icon="el-icon-edit"
             size="mini"
-            @click="showUpdateBook"
+            @click="showUpdateBook(scope.row)"
           ></el-button>
           <!-- 删除按钮 -->
           <el-button
-            plagitin
+            plain
             type="danger"
             icon="el-icon-delete"
             size="mini"
@@ -104,20 +104,22 @@
       class="my-pagination"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :page-sizes="[1, 3, 5, 7]"
+      :page-sizes="[3, 5, 7]"
       :page-size="100"
       layout="total, sizes, prev, pager, next"
-      :total="this.bookData.length"
+      :total="total"
     >
     </el-pagination>
-    <AddBook ref="addBook"></AddBook>
+    <AddBook ref="addBook" :allBank="allBank" @refresh="refresh"></AddBook>
+    <UpdateBook ref="updateBook" :allBank="allBank" @refresh="refresh"></UpdateBook>
   </div>
 </template>
 
 <script>
+import { getAllBank } from "@/api/service.js";
 import { getBook, deleteBook } from "@/api/book.js";
 import AddBook from "./module/AddBook.vue";
-
+import UpdateBook from "./module/UpdateBook.vue";
 const data = [
   {
     id: 1,
@@ -126,7 +128,7 @@ const data = [
     userName: "小李",
     appointmentTime: "2022-11-22T13:24:30.000+0000",
     createTime: "2022-11-22T13:24:30.000+0000",
-    updateTime: "2022-11-22T13:24:51.000+0000",
+    updateTime: "2022-11-22T13:24:51.000+0000"
   },
   {
     id: 2,
@@ -136,12 +138,13 @@ const data = [
     userName: "小李1",
     appointmentTime: "2022-11-22T13:24:30.000+0000",
     createTime: "2022-11-22T13:24:30.000+0000",
-    updateTime: "2022-11-22T13:24:51.000+0000",
-  },
+    updateTime: "2022-11-22T13:24:51.000+0000"
+  }
 ];
 export default {
   components: {
     AddBook,
+    UpdateBook
   },
   data() {
     return {
@@ -152,25 +155,30 @@ export default {
       page: 1,
       // 当前每页显示多少数据
       limit: 5,
+      total: 0,
       // 查询参数
       queryInfo: {
-        bankName: "",
         userName: "",
-        businessName: "",
+        businessName: ""
       },
+      allBank: []
     };
   },
   created() {
     this.getBookList();
+    this.getAllBankList();
   },
   methods: {
+    // 获取预约列表
     getBookList() {
       this.loading = true;
-      getBook(this.page, this.limit)
-        .then((res) => {
+      getBook(this.page, this.limit, this.queryInfo)
+        .then(res => {
           if (res.data.code === 200) {
+            console.log(res);
             this.bookData = res.data.data.records;
-            this.bookData.forEach((item) => {
+            this.total = res.data.data.total;
+            this.bookData.forEach(item => {
               item.appointmentTime = this.$moment(item.appointmentTime).format(
                 "YYYY-MM-DD HH:mm:ss"
               );
@@ -188,7 +196,20 @@ export default {
             this.$message.error("请求失败");
           }
         })
-        .catch((err) => {
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //请求所有可预约的银行列表
+    getAllBankList() {
+      getAllBank(true)
+        .then(res => {
+          console.log(res);
+          if (res.data.code === 200) {
+            this.allBank = res.data.data;
+          }
+        })
+        .catch(err => {
           console.log(err);
         });
     },
@@ -197,33 +218,37 @@ export default {
     },
     // 监听pagesize事件
     handleSizeChange(val) {
-      this.page = val;
-      // this.getBankList();
+      this.limit = val;
+      this.getBookList();
     },
     // 当前页改变
     handleCurrentChange(val) {
-      this.limit = val;
-      // this.getBankList();
+      this.page = val;
+      this.getBookList();
     },
     showAddBook() {
       this.$refs.addBook.visible = true;
     },
-    showUpdateBook() {
-      // this.$refs.updateBook.visible = true;
+    showUpdateBook(data) {
+      this.$refs.updateBook.visible = true;
+      this.$refs.updateBook.edit(data)
+    },
+    refresh() {
+      this.getBookList();
     },
     //删除预约
     async deleteBookById(id) {
-      const confirmResult = await this.$confirm("确定要删除该银行吗?", "提示", {
+      const confirmResult = await this.$confirm("确定要删除该预约吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning",
-      }).catch((err) => err);
+        type: "warning"
+      }).catch(err => err);
       // 用户确认删除, 返回字符串confirm
       // 用户取消删除, 返回字符串cancel
       if (confirmResult != "confirm") {
         return this.$message.info("已取消删除");
       }
-      deleteBook(id).then((res) => {
+      deleteBook(id).then(res => {
         if (res.data.code === 200) {
           this.$message.success("删除成功");
           this.getBookList();
@@ -231,8 +256,8 @@ export default {
           this.$message.error("删除失败");
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 
